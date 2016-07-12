@@ -36,8 +36,8 @@ public class {{classname}}: APIBase {
      - parameter {{paramName}}: ({{#isFormParam}}form{{/isFormParam}}{{#isQueryParam}}query{{/isQueryParam}}{{#isPathParam}}path{{/isPathParam}}{{#isHeaderParam}}header{{/isHeaderParam}}{{#isBodyParam}}body{{/isBodyParam}}) {{description}} {{^required}}(optional{{#defaultValue}}, default to {{{.}}}{{/defaultValue}}){{/required}}{{/allParams}}
      - parameter completion: completion handler to receive the data and the error objects
      */
-    public class func {{operationId}}({{#allParams}}{{^secondaryParam}}{{paramName}} {{/secondaryParam}}{{paramName}}: {{#isEnum}}{{#isContainer}}{{{dataType}}}{{/isContainer}}{{^isContainer}}{{{datatypeWithEnum}}}_{{operationId}}{{/isContainer}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}{{^required}}? = nil{{/required}}{{#hasMore}}, {{/hasMore}}{{/allParams}}{{#hasParams}}, {{/hasParams}}completion: (({{#returnType}}data: {{{returnType}}}?, {{/returnType}}error: ErrorType?) -> Void)) {
-        {{operationId}}WithRequestBuilder({{#allParams}}{{paramName}}: {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}).execute { (response, rawError) -> Void in
+    public class func {{operationId}}({{#allParams}}{{^secondaryParam}}{{paramName}} {{/secondaryParam}}{{paramName}}: {{#isEnum}}{{#isContainer}}{{{dataType}}}{{/isContainer}}{{^isContainer}}{{{datatypeWithEnum}}}_{{operationId}}{{/isContainer}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}{{^required}}? = nil{{/required}}{{#hasMore}}, {{/hasMore}}{{/allParams}}{{#hasParams}}, {{/hasParams}}completion: (({{#returnType}}data: {{{returnType}}}?, {{/returnType}}error: ErrorType?, headers: Dictionary<NSObject, AnyObject>) -> Void)) {
+        {{operationId}}WithRequestBuilder({{#allParams}}{{paramName}}: {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}).execute { (response, rawError, headers) -> Void in
             var err: ErrorType? = nil
             do {
                 if let e = rawError {
@@ -53,7 +53,7 @@ public class {{classname}}: APIBase {
             } catch {
                 err = error
             }
-            completion({{#returnType}}data: response?.body, {{/returnType}}error: err);
+            completion({{#returnType}}data: response?.body, {{/returnType}}error: err, headers: headers);
         }
     }
 
