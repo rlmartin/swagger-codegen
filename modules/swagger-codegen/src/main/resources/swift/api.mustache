@@ -113,9 +113,10 @@ public class {{classname}}: APIBase {
 
         let convertedParameters = APIHelper.convertBoolToString(parameters)
 
-        let requestBuilder: RequestBuilder<{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}Void{{/returnType}}>.Type = {{projectName}}API.requestBuilderFactory.getBuilder()
-
-        return requestBuilder.init(method: "{{httpMethod}}", URLString: URLString, parameters: convertedParameters, isBody: {{^queryParams}}{{^formParams}}true{{/formParams}}{{/queryParams}}{{#queryParams}}{{^secondaryParam}}false{{/secondaryParam}}{{/queryParams}}{{#formParams}}{{^secondaryParam}}false{{/secondaryParam}}{{/formParams}})
+        let requestBuilderClass: RequestBuilder<{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}Void{{/returnType}}>.Type = {{projectName}}API.requestBuilderFactory.getBuilder()
+        let requestBuilder = requestBuilderClass.init(method: "{{httpMethod}}", URLString: URLString, parameters: convertedParameters, isBody: {{^queryParams}}{{^formParams}}true{{/formParams}}{{/queryParams}}{{#queryParams}}{{^secondaryParam}}false{{/secondaryParam}}{{/queryParams}}{{#formParams}}{{^secondaryParam}}false{{/secondaryParam}}{{/formParams}}){{#returnType}}
+        requestBuilder.addHeaders(["Accept": "application/json"]){{/returnType}}
+        return requestBuilder
     }
 
 {{/operation}}
