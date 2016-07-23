@@ -11,7 +11,19 @@ protocol JSONEncodable {
 }
 
 public enum ErrorResponse : ErrorType {
-    case Error(Int, NSData?, ErrorType)
+    case RawError(Int, NSData?, ErrorType)
+    {{#operations}}
+        xxx
+    {{#operation}}
+        yyy
+        {{{operationId}}}
+    {{#responses}}{{^isDefault}}
+        zzz
+    case {{{operationId}}}{{{code}}}(Error)
+    {{/isDefault}}
+    {{/responses}}
+    {{/operation}}
+    {{/operations}}
 }
 
 public class Response<T> {

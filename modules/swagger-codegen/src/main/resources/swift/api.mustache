@@ -38,8 +38,23 @@ public class {{classname}}: APIBase {
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func {{operationId}}({{#allParams}}{{^secondaryParam}}{{paramName}} {{/secondaryParam}}{{paramName}}: {{#isEnum}}{{#isContainer}}{{{dataType}}}{{/isContainer}}{{^isContainer}}{{{datatypeWithEnum}}}_{{operationId}}{{/isContainer}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}{{^required}}? = nil{{/required}}{{#hasMore}}, {{/hasMore}}{{/allParams}}{{#hasParams}}, {{/hasParams}}completion: (({{#returnType}}data: {{{returnType}}}?, {{/returnType}}error: ErrorType?) -> Void)) {
-        {{operationId}}WithRequestBuilder({{#allParams}}{{paramName}}: {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}).execute { (response, error) -> Void in
-            completion({{#returnType}}data: response?.body, {{/returnType}}error: error);
+        {{operationId}}WithRequestBuilder({{#allParams}}{{paramName}}: {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}).execute { (response, rawError) -> Void in
+            var err: ErrorType? = nil
+            do {
+                if let e = rawError {
+                    switch e {
+                        {{#responses}}
+                        {{^isDefault}}
+                        case let .RawError({{{code}}}, data, _): err = ErrorResponse.{{{operationId}}}{{{code}}}(try Decoders.decode(clazz: {{{dataType}}}.self, source: data!))
+                        {{/isDefault}}
+                        {{/responses}}
+                        default: err = e
+                    }
+                }
+            } catch {
+                err = error
+            }
+            completion({{#returnType}}data: response?.body, {{/returnType}}error: err);
         }
     }
 
@@ -116,11 +131,11 @@ public class {{classname}}: APIBase {
         ]{{/hasMore}}{{/formParams}}{{/queryParams}}{{#queryParams}}{{^secondaryParam}}[{{/secondaryParam}}
             {{> _param}}{{#hasMore}},{{/hasMore}}{{^hasMore}}
         ]{{/hasMore}}{{/queryParams}}
- 
+
         let parameters = APIHelper.rejectNil(nillableParameters){{/bodyParam}}
- 
+
         let convertedParameters = APIHelper.convertBoolToString(parameters)
- 
+
         let requestBuilder: RequestBuilder<{{#returnType}}{{{returnType}}}{{/returnType}}{{^returnType}}Void{{/returnType}}>.Type = {{projectName}}API.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "{{httpMethod}}", URLString: URLString, parameters: convertedParameters, isBody: {{^queryParams}}{{^formParams}}true{{/formParams}}{{/queryParams}}{{#queryParams}}{{^secondaryParam}}false{{/secondaryParam}}{{/queryParams}}{{#formParams}}{{^secondaryParam}}false{{/secondaryParam}}{{/formParams}})
