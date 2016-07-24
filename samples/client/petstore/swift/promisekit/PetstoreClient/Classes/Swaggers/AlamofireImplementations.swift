@@ -45,7 +45,7 @@ class AlamofireRequestBuilder<T>: RequestBuilder<T> {
         super.init(method: method, URLString: URLString, parameters: parameters, isBody: isBody)
     }
 
-    override func execute(completion: (response: Response<T>?, error: ErrorType?) -> Void) {
+    override func execute(completion: (response: Response<T>?, error: ErrorResponse?) -> Void) {
         let managerId = NSUUID().UUIDString
         // Create a new manager for each request to customize its request header
         let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
@@ -88,7 +88,7 @@ class AlamofireRequestBuilder<T>: RequestBuilder<T> {
                         }
                         self.processRequest(uploadRequest, managerId, completion)
                     case .Failure(let encodingError):
-                        completion(response: nil, error: ErrorResponse.Error(415, nil, encodingError))
+                        completion(response: nil, error: ErrorResponse.RawError(415, nil, encodingError))
                     }
                 }
             )
@@ -102,7 +102,7 @@ class AlamofireRequestBuilder<T>: RequestBuilder<T> {
 
     }
 
-    private func processRequest(request: Request, _ managerId: String, _ completion: (response: Response<T>?, error: ErrorType?) -> Void) {
+    private func processRequest(request: Request, _ managerId: String, _ completion: (response: Response<T>?, error: ErrorResponse?) -> Void) {
         if let credential = self.credential {
             request.authenticate(usingCredential: credential)
         }
@@ -161,7 +161,7 @@ class AlamofireRequestBuilder<T>: RequestBuilder<T> {
                 if (dataResponse.result.isFailure) {
                     completion(
                         response: nil,
-                        error: ErrorResponse.Error(dataResponse.response?.statusCode ?? 500, dataResponse.data, dataResponse.result.error!)
+                        error: ErrorResponse.RawError(dataResponse.response?.statusCode ?? 500, dataResponse.data, dataResponse.result.error!)
                     )
                     return
                 }
@@ -179,7 +179,7 @@ class AlamofireRequestBuilder<T>: RequestBuilder<T> {
                 cleanupRequest()
 
                 if response.result.isFailure {
-                    completion(response: nil, error: ErrorResponse.Error(response.response?.statusCode ?? 500, response.data, response.result.error!))
+                    completion(response: nil, error: ErrorResponse.RawError(response.response?.statusCode ?? 500, response.data, response.result.error!))
                     return
                 }
 
@@ -198,7 +198,7 @@ class AlamofireRequestBuilder<T>: RequestBuilder<T> {
                     return
                 }
 
-                completion(response: nil, error: ErrorResponse.Error(500, nil, NSError(domain: "localhost", code: 500, userInfo: ["reason": "unreacheable code"])))
+                completion(response: nil, error: ErrorResponse.RawError(500, nil, NSError(domain: "localhost", code: 500, userInfo: ["reason": "unreacheable code"])))
             }
         }
     }

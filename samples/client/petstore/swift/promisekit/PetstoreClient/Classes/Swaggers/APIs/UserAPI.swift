@@ -18,8 +18,18 @@ public class UserAPI: APIBase {
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func createUser(body body: User? = nil, completion: ((error: ErrorType?) -> Void)) {
-        createUserWithRequestBuilder(body: body).execute { (response, error) -> Void in
-            completion(error: error);
+        createUserWithRequestBuilder(body: body).execute { (response, rawError) -> Void in
+            var err: ErrorType? = nil
+            do {
+                if let e = rawError {
+                    switch e {
+                        default: err = e
+                    }
+                }
+            } catch {
+                err = error
+            }
+            completion(error: err);
         }
     }
 
@@ -54,9 +64,9 @@ public class UserAPI: APIBase {
         let path = "/user"
         let URLString = PetstoreClientAPI.basePath + path
         let parameters = body?.encodeToJSON() as? [String:AnyObject]
- 
+
         let convertedParameters = APIHelper.convertBoolToString(parameters)
- 
+
         let requestBuilder: RequestBuilder<Void>.Type = PetstoreClientAPI.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "POST", URLString: URLString, parameters: convertedParameters, isBody: true)
@@ -69,8 +79,18 @@ public class UserAPI: APIBase {
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func createUsersWithArrayInput(body body: [User]? = nil, completion: ((error: ErrorType?) -> Void)) {
-        createUsersWithArrayInputWithRequestBuilder(body: body).execute { (response, error) -> Void in
-            completion(error: error);
+        createUsersWithArrayInputWithRequestBuilder(body: body).execute { (response, rawError) -> Void in
+            var err: ErrorType? = nil
+            do {
+                if let e = rawError {
+                    switch e {
+                        default: err = e
+                    }
+                }
+            } catch {
+                err = error
+            }
+            completion(error: err);
         }
     }
 
@@ -105,9 +125,9 @@ public class UserAPI: APIBase {
         let path = "/user/createWithArray"
         let URLString = PetstoreClientAPI.basePath + path
         let parameters = body?.encodeToJSON() as? [String:AnyObject]
- 
+
         let convertedParameters = APIHelper.convertBoolToString(parameters)
- 
+
         let requestBuilder: RequestBuilder<Void>.Type = PetstoreClientAPI.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "POST", URLString: URLString, parameters: convertedParameters, isBody: true)
@@ -120,8 +140,18 @@ public class UserAPI: APIBase {
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func createUsersWithListInput(body body: [User]? = nil, completion: ((error: ErrorType?) -> Void)) {
-        createUsersWithListInputWithRequestBuilder(body: body).execute { (response, error) -> Void in
-            completion(error: error);
+        createUsersWithListInputWithRequestBuilder(body: body).execute { (response, rawError) -> Void in
+            var err: ErrorType? = nil
+            do {
+                if let e = rawError {
+                    switch e {
+                        default: err = e
+                    }
+                }
+            } catch {
+                err = error
+            }
+            completion(error: err);
         }
     }
 
@@ -156,9 +186,9 @@ public class UserAPI: APIBase {
         let path = "/user/createWithList"
         let URLString = PetstoreClientAPI.basePath + path
         let parameters = body?.encodeToJSON() as? [String:AnyObject]
- 
+
         let convertedParameters = APIHelper.convertBoolToString(parameters)
- 
+
         let requestBuilder: RequestBuilder<Void>.Type = PetstoreClientAPI.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "POST", URLString: URLString, parameters: convertedParameters, isBody: true)
@@ -171,8 +201,20 @@ public class UserAPI: APIBase {
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func deleteUser(username username: String, completion: ((error: ErrorType?) -> Void)) {
-        deleteUserWithRequestBuilder(username: username).execute { (response, error) -> Void in
-            completion(error: error);
+        deleteUserWithRequestBuilder(username: username).execute { (response, rawError) -> Void in
+            var err: ErrorType? = nil
+            do {
+                if let e = rawError {
+                    switch e {
+                        case let .RawError(400, data, _): err = ErrorResponse.deleteUser400(try Decoders.decode(clazz: .self, source: data!))
+                        case let .RawError(404, data, _): err = ErrorResponse.deleteUser404(try Decoders.decode(clazz: .self, source: data!))
+                        default: err = e
+                    }
+                }
+            } catch {
+                err = error
+            }
+            completion(error: err);
         }
     }
 
@@ -209,11 +251,11 @@ public class UserAPI: APIBase {
         let URLString = PetstoreClientAPI.basePath + path
 
         let nillableParameters: [String:AnyObject?] = [:]
- 
+
         let parameters = APIHelper.rejectNil(nillableParameters)
- 
+
         let convertedParameters = APIHelper.convertBoolToString(parameters)
- 
+
         let requestBuilder: RequestBuilder<Void>.Type = PetstoreClientAPI.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "DELETE", URLString: URLString, parameters: convertedParameters, isBody: true)
@@ -226,8 +268,20 @@ public class UserAPI: APIBase {
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func getUserByName(username username: String, completion: ((data: User?, error: ErrorType?) -> Void)) {
-        getUserByNameWithRequestBuilder(username: username).execute { (response, error) -> Void in
-            completion(data: response?.body, error: error);
+        getUserByNameWithRequestBuilder(username: username).execute { (response, rawError) -> Void in
+            var err: ErrorType? = nil
+            do {
+                if let e = rawError {
+                    switch e {
+                        case let .RawError(400, data, _): err = ErrorResponse.getUserByName400(try Decoders.decode(clazz: .self, source: data!))
+                        case let .RawError(404, data, _): err = ErrorResponse.getUserByName404(try Decoders.decode(clazz: .self, source: data!))
+                        default: err = e
+                    }
+                }
+            } catch {
+                err = error
+            }
+            completion(data: response?.body, error: err);
         }
     }
 
@@ -302,11 +356,11 @@ public class UserAPI: APIBase {
         let URLString = PetstoreClientAPI.basePath + path
 
         let nillableParameters: [String:AnyObject?] = [:]
- 
+
         let parameters = APIHelper.rejectNil(nillableParameters)
- 
+
         let convertedParameters = APIHelper.convertBoolToString(parameters)
- 
+
         let requestBuilder: RequestBuilder<User>.Type = PetstoreClientAPI.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "GET", URLString: URLString, parameters: convertedParameters, isBody: true)
@@ -320,8 +374,19 @@ public class UserAPI: APIBase {
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func loginUser(username username: String? = nil, password: String? = nil, completion: ((data: String?, error: ErrorType?) -> Void)) {
-        loginUserWithRequestBuilder(username: username, password: password).execute { (response, error) -> Void in
-            completion(data: response?.body, error: error);
+        loginUserWithRequestBuilder(username: username, password: password).execute { (response, rawError) -> Void in
+            var err: ErrorType? = nil
+            do {
+                if let e = rawError {
+                    switch e {
+                        case let .RawError(400, data, _): err = ErrorResponse.loginUser400(try Decoders.decode(clazz: .self, source: data!))
+                        default: err = e
+                    }
+                }
+            } catch {
+                err = error
+            }
+            completion(data: response?.body, error: err);
         }
     }
 
@@ -364,11 +429,11 @@ public class UserAPI: APIBase {
             "username": username,
             "password": password
         ]
- 
+
         let parameters = APIHelper.rejectNil(nillableParameters)
- 
+
         let convertedParameters = APIHelper.convertBoolToString(parameters)
- 
+
         let requestBuilder: RequestBuilder<String>.Type = PetstoreClientAPI.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "GET", URLString: URLString, parameters: convertedParameters, isBody: false)
@@ -380,8 +445,18 @@ public class UserAPI: APIBase {
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func logoutUser(completion: ((error: ErrorType?) -> Void)) {
-        logoutUserWithRequestBuilder().execute { (response, error) -> Void in
-            completion(error: error);
+        logoutUserWithRequestBuilder().execute { (response, rawError) -> Void in
+            var err: ErrorType? = nil
+            do {
+                if let e = rawError {
+                    switch e {
+                        default: err = e
+                    }
+                }
+            } catch {
+                err = error
+            }
+            completion(error: err);
         }
     }
 
@@ -414,11 +489,11 @@ public class UserAPI: APIBase {
         let URLString = PetstoreClientAPI.basePath + path
 
         let nillableParameters: [String:AnyObject?] = [:]
- 
+
         let parameters = APIHelper.rejectNil(nillableParameters)
- 
+
         let convertedParameters = APIHelper.convertBoolToString(parameters)
- 
+
         let requestBuilder: RequestBuilder<Void>.Type = PetstoreClientAPI.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "GET", URLString: URLString, parameters: convertedParameters, isBody: true)
@@ -432,8 +507,20 @@ public class UserAPI: APIBase {
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func updateUser(username username: String, body: User? = nil, completion: ((error: ErrorType?) -> Void)) {
-        updateUserWithRequestBuilder(username: username, body: body).execute { (response, error) -> Void in
-            completion(error: error);
+        updateUserWithRequestBuilder(username: username, body: body).execute { (response, rawError) -> Void in
+            var err: ErrorType? = nil
+            do {
+                if let e = rawError {
+                    switch e {
+                        case let .RawError(400, data, _): err = ErrorResponse.updateUser400(try Decoders.decode(clazz: .self, source: data!))
+                        case let .RawError(404, data, _): err = ErrorResponse.updateUser404(try Decoders.decode(clazz: .self, source: data!))
+                        default: err = e
+                    }
+                }
+            } catch {
+                err = error
+            }
+            completion(error: err);
         }
     }
 
@@ -471,9 +558,9 @@ public class UserAPI: APIBase {
         path = path.stringByReplacingOccurrencesOfString("{username}", withString: "\(username)", options: .LiteralSearch, range: nil)
         let URLString = PetstoreClientAPI.basePath + path
         let parameters = body?.encodeToJSON() as? [String:AnyObject]
- 
+
         let convertedParameters = APIHelper.convertBoolToString(parameters)
- 
+
         let requestBuilder: RequestBuilder<Void>.Type = PetstoreClientAPI.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "PUT", URLString: URLString, parameters: convertedParameters, isBody: true)

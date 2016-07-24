@@ -17,8 +17,19 @@ public class PetAPI: APIBase {
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func addPet(body body: Pet? = nil, completion: ((error: ErrorType?) -> Void)) {
-        addPetWithRequestBuilder(body: body).execute { (response, error) -> Void in
-            completion(error: error);
+        addPetWithRequestBuilder(body: body).execute { (response, rawError) -> Void in
+            var err: ErrorType? = nil
+            do {
+                if let e = rawError {
+                    switch e {
+                        case let .RawError(405, data, _): err = ErrorResponse.addPet405(try Decoders.decode(clazz: .self, source: data!))
+                        default: err = e
+                    }
+                }
+            } catch {
+                err = error
+            }
+            completion(error: err);
         }
     }
 
@@ -39,9 +50,9 @@ public class PetAPI: APIBase {
         let path = "/pet"
         let URLString = PetstoreClientAPI.basePath + path
         let parameters = body?.encodeToJSON() as? [String:AnyObject]
- 
+
         let convertedParameters = APIHelper.convertBoolToString(parameters)
- 
+
         let requestBuilder: RequestBuilder<Void>.Type = PetstoreClientAPI.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "POST", URLString: URLString, parameters: convertedParameters, isBody: true)
@@ -54,8 +65,19 @@ public class PetAPI: APIBase {
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func deletePet(petId petId: Int64, completion: ((error: ErrorType?) -> Void)) {
-        deletePetWithRequestBuilder(petId: petId).execute { (response, error) -> Void in
-            completion(error: error);
+        deletePetWithRequestBuilder(petId: petId).execute { (response, rawError) -> Void in
+            var err: ErrorType? = nil
+            do {
+                if let e = rawError {
+                    switch e {
+                        case let .RawError(400, data, _): err = ErrorResponse.deletePet400(try Decoders.decode(clazz: .self, source: data!))
+                        default: err = e
+                    }
+                }
+            } catch {
+                err = error
+            }
+            completion(error: err);
         }
     }
 
@@ -78,11 +100,11 @@ public class PetAPI: APIBase {
         let URLString = PetstoreClientAPI.basePath + path
 
         let nillableParameters: [String:AnyObject?] = [:]
- 
+
         let parameters = APIHelper.rejectNil(nillableParameters)
- 
+
         let convertedParameters = APIHelper.convertBoolToString(parameters)
- 
+
         let requestBuilder: RequestBuilder<Void>.Type = PetstoreClientAPI.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "DELETE", URLString: URLString, parameters: convertedParameters, isBody: true)
@@ -95,8 +117,19 @@ public class PetAPI: APIBase {
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func findPetsByStatus(status status: [String]? = nil, completion: ((data: [Pet]?, error: ErrorType?) -> Void)) {
-        findPetsByStatusWithRequestBuilder(status: status).execute { (response, error) -> Void in
-            completion(data: response?.body, error: error);
+        findPetsByStatusWithRequestBuilder(status: status).execute { (response, rawError) -> Void in
+            var err: ErrorType? = nil
+            do {
+                if let e = rawError {
+                    switch e {
+                        case let .RawError(400, data, _): err = ErrorResponse.findPetsByStatus400(try Decoders.decode(clazz: .self, source: data!))
+                        default: err = e
+                    }
+                }
+            } catch {
+                err = error
+            }
+            completion(data: response?.body, error: err);
         }
     }
 
@@ -127,11 +160,11 @@ public class PetAPI: APIBase {
         let nillableParameters: [String:AnyObject?] = [
             "status": status
         ]
- 
+
         let parameters = APIHelper.rejectNil(nillableParameters)
- 
+
         let convertedParameters = APIHelper.convertBoolToString(parameters)
- 
+
         let requestBuilder: RequestBuilder<[Pet]>.Type = PetstoreClientAPI.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "GET", URLString: URLString, parameters: convertedParameters, isBody: false)
@@ -144,8 +177,19 @@ public class PetAPI: APIBase {
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func findPetsByTags(tags tags: [String]? = nil, completion: ((data: [Pet]?, error: ErrorType?) -> Void)) {
-        findPetsByTagsWithRequestBuilder(tags: tags).execute { (response, error) -> Void in
-            completion(data: response?.body, error: error);
+        findPetsByTagsWithRequestBuilder(tags: tags).execute { (response, rawError) -> Void in
+            var err: ErrorType? = nil
+            do {
+                if let e = rawError {
+                    switch e {
+                        case let .RawError(400, data, _): err = ErrorResponse.findPetsByTags400(try Decoders.decode(clazz: .self, source: data!))
+                        default: err = e
+                    }
+                }
+            } catch {
+                err = error
+            }
+            completion(data: response?.body, error: err);
         }
     }
 
@@ -215,11 +259,11 @@ public class PetAPI: APIBase {
         let nillableParameters: [String:AnyObject?] = [
             "tags": tags
         ]
- 
+
         let parameters = APIHelper.rejectNil(nillableParameters)
- 
+
         let convertedParameters = APIHelper.convertBoolToString(parameters)
- 
+
         let requestBuilder: RequestBuilder<[Pet]>.Type = PetstoreClientAPI.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "GET", URLString: URLString, parameters: convertedParameters, isBody: false)
@@ -232,8 +276,20 @@ public class PetAPI: APIBase {
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func getPetById(petId petId: Int64, completion: ((data: Pet?, error: ErrorType?) -> Void)) {
-        getPetByIdWithRequestBuilder(petId: petId).execute { (response, error) -> Void in
-            completion(data: response?.body, error: error);
+        getPetByIdWithRequestBuilder(petId: petId).execute { (response, rawError) -> Void in
+            var err: ErrorType? = nil
+            do {
+                if let e = rawError {
+                    switch e {
+                        case let .RawError(400, data, _): err = ErrorResponse.getPetById400(try Decoders.decode(clazz: .self, source: data!))
+                        case let .RawError(404, data, _): err = ErrorResponse.getPetById404(try Decoders.decode(clazz: .self, source: data!))
+                        default: err = e
+                    }
+                }
+            } catch {
+                err = error
+            }
+            completion(data: response?.body, error: err);
         }
     }
 
@@ -305,11 +361,11 @@ public class PetAPI: APIBase {
         let URLString = PetstoreClientAPI.basePath + path
 
         let nillableParameters: [String:AnyObject?] = [:]
- 
+
         let parameters = APIHelper.rejectNil(nillableParameters)
- 
+
         let convertedParameters = APIHelper.convertBoolToString(parameters)
- 
+
         let requestBuilder: RequestBuilder<Pet>.Type = PetstoreClientAPI.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "GET", URLString: URLString, parameters: convertedParameters, isBody: true)
@@ -322,8 +378,21 @@ public class PetAPI: APIBase {
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func updatePet(body body: Pet? = nil, completion: ((error: ErrorType?) -> Void)) {
-        updatePetWithRequestBuilder(body: body).execute { (response, error) -> Void in
-            completion(error: error);
+        updatePetWithRequestBuilder(body: body).execute { (response, rawError) -> Void in
+            var err: ErrorType? = nil
+            do {
+                if let e = rawError {
+                    switch e {
+                        case let .RawError(400, data, _): err = ErrorResponse.updatePet400(try Decoders.decode(clazz: .self, source: data!))
+                        case let .RawError(404, data, _): err = ErrorResponse.updatePet404(try Decoders.decode(clazz: .self, source: data!))
+                        case let .RawError(405, data, _): err = ErrorResponse.updatePet405(try Decoders.decode(clazz: .self, source: data!))
+                        default: err = e
+                    }
+                }
+            } catch {
+                err = error
+            }
+            completion(error: err);
         }
     }
 
@@ -344,9 +413,9 @@ public class PetAPI: APIBase {
         let path = "/pet"
         let URLString = PetstoreClientAPI.basePath + path
         let parameters = body?.encodeToJSON() as? [String:AnyObject]
- 
+
         let convertedParameters = APIHelper.convertBoolToString(parameters)
- 
+
         let requestBuilder: RequestBuilder<Void>.Type = PetstoreClientAPI.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "PUT", URLString: URLString, parameters: convertedParameters, isBody: true)
@@ -361,8 +430,19 @@ public class PetAPI: APIBase {
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func updatePetWithForm(petId petId: String, name: String? = nil, status: String? = nil, completion: ((error: ErrorType?) -> Void)) {
-        updatePetWithFormWithRequestBuilder(petId: petId, name: name, status: status).execute { (response, error) -> Void in
-            completion(error: error);
+        updatePetWithFormWithRequestBuilder(petId: petId, name: name, status: status).execute { (response, rawError) -> Void in
+            var err: ErrorType? = nil
+            do {
+                if let e = rawError {
+                    switch e {
+                        case let .RawError(405, data, _): err = ErrorResponse.updatePetWithForm405(try Decoders.decode(clazz: .self, source: data!))
+                        default: err = e
+                    }
+                }
+            } catch {
+                err = error
+            }
+            completion(error: err);
         }
     }
 
@@ -390,11 +470,11 @@ public class PetAPI: APIBase {
             "name": name,
             "status": status
         ]
- 
+
         let parameters = APIHelper.rejectNil(nillableParameters)
- 
+
         let convertedParameters = APIHelper.convertBoolToString(parameters)
- 
+
         let requestBuilder: RequestBuilder<Void>.Type = PetstoreClientAPI.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "POST", URLString: URLString, parameters: convertedParameters, isBody: false)
@@ -409,8 +489,18 @@ public class PetAPI: APIBase {
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func uploadFile(petId petId: Int64, additionalMetadata: String? = nil, file: NSURL? = nil, completion: ((error: ErrorType?) -> Void)) {
-        uploadFileWithRequestBuilder(petId: petId, additionalMetadata: additionalMetadata, file: file).execute { (response, error) -> Void in
-            completion(error: error);
+        uploadFileWithRequestBuilder(petId: petId, additionalMetadata: additionalMetadata, file: file).execute { (response, rawError) -> Void in
+            var err: ErrorType? = nil
+            do {
+                if let e = rawError {
+                    switch e {
+                        default: err = e
+                    }
+                }
+            } catch {
+                err = error
+            }
+            completion(error: err);
         }
     }
 
@@ -438,11 +528,11 @@ public class PetAPI: APIBase {
             "additionalMetadata": additionalMetadata,
             "file": file
         ]
- 
+
         let parameters = APIHelper.rejectNil(nillableParameters)
- 
+
         let convertedParameters = APIHelper.convertBoolToString(parameters)
- 
+
         let requestBuilder: RequestBuilder<Void>.Type = PetstoreClientAPI.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "POST", URLString: URLString, parameters: convertedParameters, isBody: false)

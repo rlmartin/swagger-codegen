@@ -17,8 +17,20 @@ public class StoreAPI: APIBase {
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func deleteOrder(orderId orderId: String, completion: ((error: ErrorType?) -> Void)) {
-        deleteOrderWithRequestBuilder(orderId: orderId).execute { (response, error) -> Void in
-            completion(error: error);
+        deleteOrderWithRequestBuilder(orderId: orderId).execute { (response, rawError) -> Void in
+            var err: ErrorType? = nil
+            do {
+                if let e = rawError {
+                    switch e {
+                        case let .RawError(400, data, _): err = ErrorResponse.deleteOrder400(try Decoders.decode(clazz: .self, source: data!))
+                        case let .RawError(404, data, _): err = ErrorResponse.deleteOrder404(try Decoders.decode(clazz: .self, source: data!))
+                        default: err = e
+                    }
+                }
+            } catch {
+                err = error
+            }
+            completion(error: err);
         }
     }
 
@@ -38,11 +50,11 @@ public class StoreAPI: APIBase {
         let URLString = PetstoreClientAPI.basePath + path
 
         let nillableParameters: [String:AnyObject?] = [:]
- 
+
         let parameters = APIHelper.rejectNil(nillableParameters)
- 
+
         let convertedParameters = APIHelper.convertBoolToString(parameters)
- 
+
         let requestBuilder: RequestBuilder<Void>.Type = PetstoreClientAPI.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "DELETE", URLString: URLString, parameters: convertedParameters, isBody: true)
@@ -54,8 +66,18 @@ public class StoreAPI: APIBase {
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func getInventory(completion: ((data: [String:Int32]?, error: ErrorType?) -> Void)) {
-        getInventoryWithRequestBuilder().execute { (response, error) -> Void in
-            completion(data: response?.body, error: error);
+        getInventoryWithRequestBuilder().execute { (response, rawError) -> Void in
+            var err: ErrorType? = nil
+            do {
+                if let e = rawError {
+                    switch e {
+                        default: err = e
+                    }
+                }
+            } catch {
+                err = error
+            }
+            completion(data: response?.body, error: err);
         }
     }
 
@@ -81,11 +103,11 @@ public class StoreAPI: APIBase {
         let URLString = PetstoreClientAPI.basePath + path
 
         let nillableParameters: [String:AnyObject?] = [:]
- 
+
         let parameters = APIHelper.rejectNil(nillableParameters)
- 
+
         let convertedParameters = APIHelper.convertBoolToString(parameters)
- 
+
         let requestBuilder: RequestBuilder<[String:Int32]>.Type = PetstoreClientAPI.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "GET", URLString: URLString, parameters: convertedParameters, isBody: true)
@@ -98,8 +120,20 @@ public class StoreAPI: APIBase {
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func getOrderById(orderId orderId: String, completion: ((data: Order?, error: ErrorType?) -> Void)) {
-        getOrderByIdWithRequestBuilder(orderId: orderId).execute { (response, error) -> Void in
-            completion(data: response?.body, error: error);
+        getOrderByIdWithRequestBuilder(orderId: orderId).execute { (response, rawError) -> Void in
+            var err: ErrorType? = nil
+            do {
+                if let e = rawError {
+                    switch e {
+                        case let .RawError(400, data, _): err = ErrorResponse.getOrderById400(try Decoders.decode(clazz: .self, source: data!))
+                        case let .RawError(404, data, _): err = ErrorResponse.getOrderById404(try Decoders.decode(clazz: .self, source: data!))
+                        default: err = e
+                    }
+                }
+            } catch {
+                err = error
+            }
+            completion(data: response?.body, error: err);
         }
     }
 
@@ -149,11 +183,11 @@ public class StoreAPI: APIBase {
         let URLString = PetstoreClientAPI.basePath + path
 
         let nillableParameters: [String:AnyObject?] = [:]
- 
+
         let parameters = APIHelper.rejectNil(nillableParameters)
- 
+
         let convertedParameters = APIHelper.convertBoolToString(parameters)
- 
+
         let requestBuilder: RequestBuilder<Order>.Type = PetstoreClientAPI.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "GET", URLString: URLString, parameters: convertedParameters, isBody: true)
@@ -166,8 +200,19 @@ public class StoreAPI: APIBase {
      - parameter completion: completion handler to receive the data and the error objects
      */
     public class func placeOrder(body body: Order? = nil, completion: ((data: Order?, error: ErrorType?) -> Void)) {
-        placeOrderWithRequestBuilder(body: body).execute { (response, error) -> Void in
-            completion(data: response?.body, error: error);
+        placeOrderWithRequestBuilder(body: body).execute { (response, rawError) -> Void in
+            var err: ErrorType? = nil
+            do {
+                if let e = rawError {
+                    switch e {
+                        case let .RawError(400, data, _): err = ErrorResponse.placeOrder400(try Decoders.decode(clazz: .self, source: data!))
+                        default: err = e
+                    }
+                }
+            } catch {
+                err = error
+            }
+            completion(data: response?.body, error: err);
         }
     }
 
@@ -215,9 +260,9 @@ public class StoreAPI: APIBase {
         let path = "/store/order"
         let URLString = PetstoreClientAPI.basePath + path
         let parameters = body?.encodeToJSON() as? [String:AnyObject]
- 
+
         let convertedParameters = APIHelper.convertBoolToString(parameters)
- 
+
         let requestBuilder: RequestBuilder<Order>.Type = PetstoreClientAPI.requestBuilderFactory.getBuilder()
 
         return requestBuilder.init(method: "POST", URLString: URLString, parameters: convertedParameters, isBody: true)

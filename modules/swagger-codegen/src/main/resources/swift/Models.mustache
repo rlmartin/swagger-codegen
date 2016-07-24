@@ -11,19 +11,8 @@ protocol JSONEncodable {
 }
 
 public enum ErrorResponse : ErrorType {
-    case RawError(Int, NSData?, ErrorType)
-    {{#operations}}
-        xxx
-    {{#operation}}
-        yyy
-        {{{operationId}}}
-    {{#responses}}{{^isDefault}}
-        zzz
-    case {{{operationId}}}{{{code}}}(Error)
-    {{/isDefault}}
-    {{/responses}}
-    {{/operation}}
-    {{/operations}}
+    case RawError(Int, NSData?, ErrorType){{#apiInfo.apis}}{{#operations}}{{#operation}}{{#responses}}{{^isDefault}}
+    case {{{operationId}}}{{{code}}}({{{dataType}}}){{/isDefault}}{{/responses}}{{/operation}}{{/operations}}{{/apiInfo.apis}}
 }
 
 public class Response<T> {
@@ -68,6 +57,11 @@ class Decoders {
             dictionary[key] = Decoders.decode(clazz: T.self, source: value)
         }
         return dictionary
+    }
+
+    static func decode<T>(clazz clazz: T.Type, source: NSData) throws -> T {
+        let json = try NSJSONSerialization.JSONObjectWithData(source, options: NSJSONReadingOptions())
+        return Decoders.decode(clazz: clazz, source: json)
     }
 
     static func decode<T>(clazz clazz: T.Type, source: AnyObject) -> T {
