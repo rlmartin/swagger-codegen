@@ -11,7 +11,29 @@ protocol JSONEncodable {
 }
 
 public enum ErrorResponse : ErrorType {
-    case Error(Int, NSData?, ErrorType)
+    case RawError(Int, NSData?, ErrorType)
+    case addPet405()
+    case deletePet400()
+    case findPetsByStatus400()
+    case findPetsByTags400()
+    case getPetById400()
+    case getPetById404()
+    case updatePet400()
+    case updatePet404()
+    case updatePet405()
+    case updatePetWithForm405()
+    case deleteOrder400()
+    case deleteOrder404()
+    case getOrderById400()
+    case getOrderById404()
+    case placeOrder400()
+    case deleteUser400()
+    case deleteUser404()
+    case getUserByName400()
+    case getUserByName404()
+    case loginUser400()
+    case updateUser400()
+    case updateUser404()
 }
 
 public class Response<T> {
@@ -56,6 +78,11 @@ class Decoders {
             dictionary[key] = Decoders.decode(clazz: T.self, source: value)
         }
         return dictionary
+    }
+
+    static func decode<T>(clazz clazz: T.Type, source: NSData) throws -> T {
+        let json = try NSJSONSerialization.JSONObjectWithData(source, options: NSJSONReadingOptions())
+        return Decoders.decode(clazz: clazz, source: json)
     }
 
     static func decode<T>(clazz clazz: T.Type, source: AnyObject) -> T {
