@@ -30,7 +30,7 @@ class AlamofireRequestBuilder<T>: RequestBuilder<T> {
 
         let encoding = isBody ? Alamofire.ParameterEncoding.JSON : Alamofire.ParameterEncoding.URL
         let xMethod = Alamofire.Method(rawValue: method)
-        let fileKeys = parameters == nil ? [] : parameters!.filter { $1.isKindOfClass(NSURL) }
+        let fileKeys = parameters == nil ? [] : parameters!.filter { $1.isKindOfClass(NSURL) || $1.isKindOfClass(FileUpload) }
                                                            .map { $0.0 }
 
         if fileKeys.count > 0 {
@@ -39,6 +39,9 @@ class AlamofireRequestBuilder<T>: RequestBuilder<T> {
                 multipartFormData: { mpForm in
                     for (k, v) in self.parameters! {
                         switch v {
+                        case let fileUpload as FileUpload:
+                            mpForm.appendBodyPart(data: fileUpload.body, name: k, fileName: fileUpload.fileName, mimeType: fileUpload.mimeType)
+                            break
                         case let fileURL as NSURL:
                             mpForm.appendBodyPart(fileURL: fileURL, name: k)
                             break

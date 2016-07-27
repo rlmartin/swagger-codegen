@@ -129,7 +129,7 @@ public class SwiftCodegen extends DefaultCodegen implements CodegenConfig {
         typeMapping.put("number", "Double");
         typeMapping.put("double", "Double");
         typeMapping.put("object", "AnyObject");
-        typeMapping.put("file", "NSURL");
+        typeMapping.put("file", "FileUpload");
         typeMapping.put("binary", "NSData");
         typeMapping.put("ByteArray", "NSData");
         typeMapping.put("UUID", "NSUUID");
@@ -346,7 +346,7 @@ public class SwiftCodegen extends DefaultCodegen implements CodegenConfig {
         if (codegenProperty.isEnum) {
             List<Map<String, String>> swiftEnums = new ArrayList<Map<String, String>>();
             List<String> values = (List<String>) codegenProperty.allowableValues.get("values");
-            
+
             for (String value : values) {
                 Map<String, String> map = new HashMap<String, String>();
                 map.put("enum", toSwiftyEnumName(value));
@@ -357,7 +357,7 @@ public class SwiftCodegen extends DefaultCodegen implements CodegenConfig {
             codegenProperty.datatypeWithEnum = toEnumName(codegenProperty);
             //codegenProperty.datatypeWithEnum =
             //    StringUtils.left(codegenProperty.datatypeWithEnum, codegenProperty.datatypeWithEnum.length() - "Enum".length());
- 
+
             // Ensure that the enum type doesn't match a reserved word or
             // the variable name doesn't match the generated enum type or the
             // Swift compiler will generate an error
@@ -388,7 +388,7 @@ public class SwiftCodegen extends DefaultCodegen implements CodegenConfig {
 
     @Override
     public String toOperationId(String operationId) {
-        operationId = camelize(sanitizeName(operationId), true); 
+        operationId = camelize(sanitizeName(operationId), true);
 
         // throw exception if method name is empty. This should not happen but keep the check just in case
         if (StringUtils.isEmpty(operationId)) {
