@@ -124,7 +124,8 @@ class AlamofireRequestBuilder<T>: RequestBuilder<T> {
                 if stringResponse.result.isFailure {
                     completion(
                         response: nil,
-                        error: ErrorResponse.Error(stringResponse.response?.statusCode ?? 500, stringResponse.data, stringResponse.result.error!)
+                        error: ErrorResponse.RawError(stringResponse.response?.statusCode ?? 500, stringResponse.data, stringResponse.result.error!),
+                        headers: stringResponse.response?.allHeaderFields ?? [NSObject : AnyObject]()
                     )
                     return
                 }
@@ -134,7 +135,8 @@ class AlamofireRequestBuilder<T>: RequestBuilder<T> {
                         response: stringResponse.response!,
                         body: (stringResponse.result.value ?? "") as! T
                     ),
-                    error: nil
+                    error: nil,
+                    headers: stringResponse.response!.allHeaderFields
                 )
             })
         case is Void.Type:
@@ -144,7 +146,8 @@ class AlamofireRequestBuilder<T>: RequestBuilder<T> {
                 if voidResponse.result.isFailure {
                     completion(
                         response: nil,
-                        error: ErrorResponse.Error(voidResponse.response?.statusCode ?? 500, voidResponse.data, voidResponse.result.error!)
+                        error: ErrorResponse.RawError(voidResponse.response?.statusCode ?? 500, voidResponse.data, voidResponse.result.error!),
+                        headers: voidResponse.response?.allHeaderFields ?? [NSObject : AnyObject]()
                     )
                     return
                 }
@@ -154,7 +157,8 @@ class AlamofireRequestBuilder<T>: RequestBuilder<T> {
                         response: voidResponse.response!,
                         body: nil
                     ),
-                    error: nil
+                    error: nil,
+                    headers: voidResponse.response!.allHeaderFields
                 )
             })
         case is NSData.Type:
